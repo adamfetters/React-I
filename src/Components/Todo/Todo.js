@@ -13,6 +13,7 @@ class Todo extends Component {
   }
 
   handleClick = () => {
+    localStorage.setItem('todo', this.state.cliced)
     this.setState({ clicked: !this.state.clicked });
   };
 
