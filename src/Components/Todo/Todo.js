@@ -4,11 +4,12 @@ import React, { Component } from 'react';
 import './Todo.css';
 
 class Todo extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     console.log(this);
     this.state = {
-      clicked: false
+      text: props.text,
+      completed: props.completed
     };
   }
 
@@ -16,19 +17,16 @@ class Todo extends Component {
     this.setState({ clicked: !this.state.clicked });
   };
 
-  remove = () => {
-    this.props.remove(this.props.index);
-  };
 
   render() {
-    const styles = this.state.clicked
+    const styles = this.state.completed
       ? { textDecoration: 'line-through' }
       : { textDecoration: 'none' };
     return (
       <div>
         <div className="Todo-Container">
           <div className="Button-Container">
-            <button className="btn btn--delete" onClick={() => this.remove()}>
+            <button className="btn btn--delete" onClick={() => this.props.remove()}>
               X
             </button>
             <div
@@ -37,7 +35,7 @@ class Todo extends Component {
               className="Todo-Container__item"
             >
             
-              {this.props.todo}
+              {this.props.todo.text}
             </div>
           </div>
         </div>

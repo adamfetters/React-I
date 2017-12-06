@@ -5,68 +5,85 @@ import Todo from '../Todo/Todo';
 import './TodoList.css';
 
 class TodoList extends Component {
-   componentDidMount() {
-     if (localStorage.getItem('todo')) {
-       const storage = localStorage.todo.split(',');
-       this.setState({ todos: storage});
-     }
-   }
-  
+    
   constructor() {
     super();
 
     this.state = {
-      todos: [],
-      newTodo: ''
+      todos: this.getLocalStorage() || [],
+      newTodo: {
+        text: '',
+        completed: false
+      }
     };
   }
 
-  handleTodoInput = event => {
-  
-    this.setState({ newTodo: event.target.value });
+  getLocalStorage() {
+    return JSON.parse(localStorage.getItem('state'));
+  }
 
-  };
+  setLocalStorage(storage) {
+    localStorage.setItem('state', JSON.stringify(storage));
+  }
+
+  handleTodoInput = event => {
+      this.setState({ 
+        newTodo: {
+          text: event.target.value,
+          completed: false
+        }
+      });
+    }
+  
 
 
 
   addTodo = event => {
-    
     event.preventDefault();
     const todoList = this.state.todos;
-    if (this.state.newTodo === '' ) return;
-    todoList.push(this.state.newTodo);
+    const todo = this.state.newTodo;
+    if (todo === '' ) return;
     this.setState({
-      newTodo: '',
-      todos: todoList
-    });
-    localStorage.setItem('todo', this.state.todos);
-  };
-
+      todos: [...todoList, todo],
+      newTodo: {
+        text: '', 
+        completed: false
+             }         
+          });
+        }
+      }
   removeTodo = (index) => {
-    const todoList = this.state.todos;
-    todoList.splice(index,1);
-    this.setState({
-      todos: todoList
-    });
-   localStorage.todo = todoList;
-  }
+    return () => {
+      this.setState({
+        todos: this.state.todos.filter((todo, todoIndex) => {
+          return todoIndex !== index;
+        })
+      })
+    }
+}
+
+    setState = (newState) => {
+      super.setState(newState);
+      this.setLocalStorage(newState.todos);
+    }
 
   render() {
     return (
       <div>
         
-        {this.state.todos.map((todo, i) => <Todo key={i} index={i} todo={todo}  remove={this.removeTodo.bind(this)} />)}
+        {this.state.todos.map((todo, i) => <Todo key={i} index={i} todo={todo}  remove={this.removeTodo(i)} />)}
         <form onSubmit={this.addTodo}>
           <input className="input"
             onChange={this.handleTodoInput}
             placeholder="Add a new todo"
-            value={this.state.newTodo}
+            value={this.state.newTodo.text}
           />
           
         </form>
       </div>
     );
   }
-}
+  }
+
 
 export default TodoList;
